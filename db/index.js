@@ -9,7 +9,11 @@ module.exports = {
     mongoClient = require('mongodb').MongoClient
   }) => {
     try {
-      const url = `mongodb://${dbUser}:${dbPassword}@${dbHost}.mlab.com:${dbPort}/${dbName}`
+      const url = dbUser && dbPassword
+        ? `mongodb://${dbUser}:${dbPassword}@${
+          dbHost
+        }:${dbPort}/${dbName}`
+        : `mongodb://${dbHost}:${dbPort}/${dbName}`
       if (db) return db
       const client = await mongoClient.connect(url, { useNewUrlParser: true })
       db = client.db(dbName)

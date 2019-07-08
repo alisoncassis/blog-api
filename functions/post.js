@@ -6,7 +6,7 @@ const {
   queryParamsValidate
 } = require('../schemas')
 
-exports.handler = async function(
+exports.handler = async function (
   event,
   context,
   callback,
@@ -37,6 +37,16 @@ exports.handler = async function(
       })
     }
     if (['POST', 'PUT'].includes(method)) {
+      const parsedBody = JSON.parse(event.body)
+      if (parsedBody.slug && parsedBody.slug.includes(' ')) {
+        return error({
+          route: event.path,
+          payloadFromRequest: event.body,
+          statusCode: 400,
+          body: { field: 'slug', message: 'slug should not contain empty spaces', statusCode: 400 }
+        })
+      }
+
       const validation = payloadValidate(event.body, 'post', method)
       if (validation.error) {
         const validationError = formatValidateReturn(validation)
@@ -78,12 +88,12 @@ exports.handler = async function(
       case 'GET':
         result = _id
           ? await post.getById(_id, {
-              userId: currentUserId
-            })
+            userId: currentUserId
+          })
           : await post.get({
-              ...event.queryStringParameters,
-              userId: currentUserId
-            })
+            ...event.queryStringParameters,
+            userId: currentUserId
+          })
         break
       case 'DELETE':
         result = await post.exclude(_id, { userId: currentUserId })
@@ -91,7 +101,8 @@ exports.handler = async function(
       case 'POST':
         result = await post.save({
           ...JSON.parse(event.body),
-          userId: currentUserId
+          userId: currentUserId,
+          author: decodedToken.name
         })
         break
       case 'PUT':

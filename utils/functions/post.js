@@ -2,20 +2,23 @@ const { findOne } = require('../../db/findOne')
 const { find } = require('../../db/find')
 const { insertOne } = require('../../db/insertOne')
 const { findOneAndUpdate } = require('../../db/findOneAndUpdate')
+const { exists } = require('../../db/exists')
 
 const { errorMessages } = require('../messages')
-const defaultDesiredFieldList = ['content']
+const defaultDesiredFieldList = ['content', 'title', 'slug', 'mainImageUrl']
 
-const get = async ({ userId, lastId = undefined, limit = undefined }) => {
+const get = async ({ userId = undefined, lastId = undefined, limit = undefined }) => {
   try {
     const desiredFieldList = defaultDesiredFieldList
-    const query = { userId, deleted: 0 }
+    const query = { deleted: 0 }
+    if (userId) query.userId = userId
     if (lastId) query._id = { $lt: lastId }
     const posts = await find({
       collection: 'post',
       query,
       desiredFieldList,
-      limit
+      limit,
+      withoutUserId: !userId
     })
     return posts
   } catch (error) {
@@ -41,7 +44,24 @@ const getById = async (_id, { userId }) => {
   }
 }
 
-const save = async ({ content, userId }) => {
+const getBySlug = async ({ slug }) => {
+  try {
+    const desiredFieldList = defaultDesiredFieldList
+    const query = { slug, deleted: 0 }
+    const post = await findOne({
+      collection: 'post',
+      query,
+      desiredFieldList
+    })
+    if (!post) throw new Error(errorMessages.notFound)
+    return post
+  } catch (error) {
+    console.error(error)
+    throw new Error(error.message || errorMessages.internalServerError)
+  }
+}
+
+const save = async ({ content, title, slug, mainImageUrl, userId, author }) => {
   try {
     const now = new Date().toISOString()
     const body = {
@@ -49,8 +69,13 @@ const save = async ({ content, userId }) => {
       createdAt: now,
       updatedAt: now,
       content,
-      userId
+      title,
+      slug,
+      mainImageUrl,
+      userId,
+      author
     }
+    if (await exists({ collection: 'post', query: { slug, deleted: 0 } })) { throw new Error(errorMessages.slugAlreadyExist) }
     const post = await insertOne({ collection: 'post', body })
     delete post.deleted
     delete post.userId
@@ -61,7 +86,7 @@ const save = async ({ content, userId }) => {
   }
 }
 
-const update = async (_id, { content = undefined, userId }) => {
+const update = async (_id, { content = undefined, title = undefined, slug = undefined, mainImageUrl = undefined, userId }) => {
   try {
     const desiredFieldList = defaultDesiredFieldList
     const body = {
@@ -70,6 +95,10 @@ const update = async (_id, { content = undefined, userId }) => {
       }
     }
     if (content !== undefined) body.$set.content = content
+    if (title !== undefined) body.$set.title = title
+    if (slug !== undefined) body.$set.slug = slug
+    if (mainImageUrl !== undefined) body.$set.mainImageUrl = mainImageUrl
+    if (await exists({ collection: 'post', query: { slug, deleted: 0 } })) throw new Error(errorMessages.slugAlreadyExist)
     const post = await findOneAndUpdate({
       collection: 'post',
       query: { _id, userId, deleted: 0 },
@@ -109,6 +138,7 @@ const exclude = async (_id, { userId }) => {
 
 module.exports.get = get
 module.exports.getById = getById
+module.exports.getBySlug = getBySlug
 module.exports.save = save
 module.exports.update = update
 module.exports.exclude = exclude

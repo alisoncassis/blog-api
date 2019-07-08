@@ -7,12 +7,6 @@ module.exports.findOne = async ({
   desiredFieldList = []
 }) => {
   const executionTime = new Date().toLocaleString('pt-br')
-  if (!query.userId && collection !== 'user') {
-    console.log(
-      `missing userId for findOne to send to database for collection ${collection} at ${executionTime}`
-    )
-    throw new Error(errorMessages.internalServerError)
-  }
   try {
     const fields = {}
     if (desiredFieldList.length > 0) {
