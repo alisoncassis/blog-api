@@ -4,7 +4,8 @@
   "description": "Blog API for the mentoring program",
   "scripts": {
     "dev": "netlify-lambda -c ./webpack.config.js serve functions",
-    "build": "npm run test && netlify-lambda build functions"
+    "build": "npm run test && netlify-lambda build functions",
+    "test": "echo ok"
   },
   "author": "Alison Cassis",
   "license": "ISC",
