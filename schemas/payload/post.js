@@ -4,7 +4,10 @@ module.exports = {
       content: joi.string().required(),
       title: joi.string().required(),
       slug: joi.string().required(),
-      mainImageUrl: joi.string().uri().required()
+      mainImageUrl: joi
+        .string()
+        .uri()
+        .required()
     }),
   PUT: joi =>
     joi.object().keys({

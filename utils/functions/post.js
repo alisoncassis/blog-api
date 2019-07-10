@@ -7,7 +7,11 @@ const { exists } = require('../../db/exists')
 const { errorMessages } = require('../messages')
 const defaultDesiredFieldList = ['content', 'title', 'slug', 'mainImageUrl']
 
-const get = async ({ userId = undefined, lastId = undefined, limit = undefined }) => {
+const get = async ({
+  userId = undefined,
+  lastId = undefined,
+  limit = undefined
+}) => {
   try {
     const desiredFieldList = defaultDesiredFieldList
     const query = { deleted: 0 }
@@ -75,7 +79,9 @@ const save = async ({ content, title, slug, mainImageUrl, userId, author }) => {
       userId,
       author
     }
-    if (await exists({ collection: 'post', query: { slug, deleted: 0 } })) { throw new Error(errorMessages.slugAlreadyExist) }
+    if (await exists({ collection: 'post', query: { slug, deleted: 0 } })) {
+      throw new Error(errorMessages.slugAlreadyExist)
+    }
     const post = await insertOne({ collection: 'post', body })
     delete post.deleted
     delete post.userId
@@ -86,7 +92,16 @@ const save = async ({ content, title, slug, mainImageUrl, userId, author }) => {
   }
 }
 
-const update = async (_id, { content = undefined, title = undefined, slug = undefined, mainImageUrl = undefined, userId }) => {
+const update = async (
+  _id,
+  {
+    content = undefined,
+    title = undefined,
+    slug = undefined,
+    mainImageUrl = undefined,
+    userId
+  }
+) => {
   try {
     const desiredFieldList = defaultDesiredFieldList
     const body = {
@@ -98,7 +113,9 @@ const update = async (_id, { content = undefined, title = undefined, slug = unde
     if (title !== undefined) body.$set.title = title
     if (slug !== undefined) body.$set.slug = slug
     if (mainImageUrl !== undefined) body.$set.mainImageUrl = mainImageUrl
-    if (await exists({ collection: 'post', query: { slug, deleted: 0 } })) throw new Error(errorMessages.slugAlreadyExist)
+    if (await exists({ collection: 'post', query: { slug, deleted: 0 } })) {
+      throw new Error(errorMessages.slugAlreadyExist)
+    }
     const post = await findOneAndUpdate({
       collection: 'post',
       query: { _id, userId, deleted: 0 },

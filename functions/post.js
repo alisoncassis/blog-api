@@ -43,7 +43,11 @@ exports.handler = async function (
           route: event.path,
           payloadFromRequest: event.body,
           statusCode: 400,
-          body: { field: 'slug', message: 'slug should not contain empty spaces', statusCode: 400 }
+          body: {
+            field: 'slug',
+            message: 'slug should not contain empty spaces',
+            statusCode: 400
+          }
         })
       }
 

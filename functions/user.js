@@ -2,7 +2,7 @@ const { error, success } = require('../utils/request')
 const { errorMessages } = require('../utils/messages')
 const { payloadValidate, formatValidateReturn } = require('../schemas')
 
-exports.handler = async function(
+exports.handler = async function (
   event,
   context,
   callback,

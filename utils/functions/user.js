@@ -1,5 +1,4 @@
 const { findOneAndUpdate } = require('../../db/findOneAndUpdate')
-const { find } = require('../../db/find')
 const { exists } = require('../../db/exists')
 const { findOne } = require('../../db/findOne')
 const { insertOne } = require('../../db/insertOne')
@@ -91,7 +90,6 @@ const save = async ({ name, email, password }) => {
 
 const update = async (_id, { name = undefined }) => {
   try {
-    let user
     const desiredFieldList = defaultDesiredFieldList
     const body = {
       $set: {

@@ -1,9 +1,6 @@
 const { error, success } = require('../utils/request')
 const { errorMessages } = require('../utils/messages')
-const {
-  formatValidateReturn,
-  queryParamsValidate
-} = require('../schemas')
+const { formatValidateReturn, queryParamsValidate } = require('../schemas')
 
 exports.handler = async function (
   event,
@@ -18,12 +15,9 @@ exports.handler = async function (
     if (method !== 'GET') {
       throw new Error(errorMessages.methodNotAllowed)
     }
-    console.info(
-      `post handler init wih method GET at ${handlerInitAt}`
-    )
+    console.info(`post handler init wih method GET at ${handlerInitAt}`)
     const matchedSlug = event.path.match(/\/blog-post\/(\S+)/)
-    const slug = matchedSlug
-      ? matchedSlug[1] : null
+    const slug = matchedSlug ? matchedSlug[1] : null
     if (method === 'GET') {
       const validation = queryParamsValidate(
         event.queryStringParameters,
