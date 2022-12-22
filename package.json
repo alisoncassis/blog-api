@@ -20,7 +20,7 @@
     "cryptr": "^4.0.2",
     "joi": "^14.3.1",
     "joi-objectid": "^2.0.0",
-    "jsonwebtoken": "^8.4.0",
+    "jsonwebtoken": "^9.0.0",
     "mongodb": "^3.1.10",
     "netlify-lambda": "^1.1.1"
   },
